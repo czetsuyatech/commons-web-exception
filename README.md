@@ -68,7 +68,7 @@ public class WebExceptions extends AbstractWebExceptionCodes {
 
     super(HttpStatus.OK);
 
-    registerErrorMap(AppExceptionCodes.getMapValues());
+    registerExceptionMap(AppExceptionCodes.getMapValues());
   }
 
   @Override
