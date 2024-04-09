@@ -126,8 +126,6 @@ public abstract class AbstractWebExceptionHandler extends ResponseEntityExceptio
     return result;
   }
 
-  //protected ProblemDetail createProblemDetail(Exception ex, HttpStatusCode status, String defaultDetail, @Nullable String detailMessageCode, @Nullable Object[] detailMessageArguments, WebRequest request) {
-
   @Override
   protected final @Nonnull ProblemDetail createProblemDetail(@Nonnull Exception ex, @Nonnull HttpStatusCode status,
       @Nonnull String defaultDetail, String detailMessageCode, Object[] detailMessageArguments,
