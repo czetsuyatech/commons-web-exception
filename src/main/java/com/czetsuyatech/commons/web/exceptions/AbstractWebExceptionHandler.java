@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -44,21 +43,11 @@ public abstract class AbstractWebExceptionHandler extends ResponseEntityExceptio
     return ex;
   }
 
-  @ExceptionHandler({RuntimeException.class})
-  public final ResponseEntity<ProblemDetail> handleRuntimeException(RuntimeException ex, @Nonnull WebRequest req) {
-
-    logRawException(ex);
-
-    ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-
-    decorateProblemDetail(problemDetail, AbstractWebExceptionCodes.RUNTIME, ex.getMessage(), req);
-
-    return ResponseEntity.of(problemDetail).build();
-  }
-
   @ExceptionHandler({InvalidFormatException.class})
   public final ResponseEntity<ProblemDetail> handleInvalidFormatException(InvalidFormatException ex,
       @Nonnull WebRequest request) {
+
+    logRawException(ex);
 
     ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
     handleInvalidFormatException(ex, problemDetail, request);
@@ -67,13 +56,13 @@ public abstract class AbstractWebExceptionHandler extends ResponseEntityExceptio
   }
 
   @Override
-  protected final ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
-      HttpHeaders headers, HttpStatusCode status,
+  protected final ResponseEntity<Object> handleHttpMessageNotReadable(@Nonnull HttpMessageNotReadableException ex,
+      @Nonnull HttpHeaders headers, @Nonnull HttpStatusCode status,
       @Nonnull WebRequest request) {
 
     ResponseEntity<Object> result = super.handleHttpMessageNotReadable(ex, headers, status, request);
 
-    if (result.getBody() instanceof ProblemDetail problemDetail) {
+    if (Objects.requireNonNull(result).getBody() instanceof ProblemDetail problemDetail) {
       if (ex.getCause() instanceof InvalidFormatException invalidFormatException) {
         handleInvalidFormatException(invalidFormatException, problemDetail, request);
       }
@@ -83,13 +72,13 @@ public abstract class AbstractWebExceptionHandler extends ResponseEntityExceptio
   }
 
   @Override
-  protected final ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-      HttpHeaders headers, HttpStatusCode status,
+  protected final ResponseEntity<Object> handleMethodArgumentNotValid(@Nonnull MethodArgumentNotValidException ex,
+      @Nonnull HttpHeaders headers, @Nonnull HttpStatusCode status,
       @Nonnull WebRequest request) {
 
     ResponseEntity<Object> result = super.handleMethodArgumentNotValid(ex, headers, status, request);
 
-    if (result.getBody() instanceof ProblemDetail problemDetail) {
+    if (Objects.requireNonNull(result).getBody() instanceof ProblemDetail problemDetail) {
 
       BindingResult bindingResult = ex.getBindingResult();
 
@@ -98,10 +87,12 @@ public abstract class AbstractWebExceptionHandler extends ResponseEntityExceptio
           .collect(Collectors.toList());
 
       String formattedMessage = params.stream().map(p -> String.format("(%s)", p)).collect(Collectors.joining(";"));
-      String parameterizedMessage = MessageFormat.format(AbstractWebExceptionCodes.METHOD_ARGUMENT_NOT_VALID_MESSAGE,
+      String parameterizedMessage = MessageFormat.format(
+          NativeWebExceptionEnumCodes.METHOD_ARGUMENT_NOT_VALID.getMessage(),
           formattedMessage);
 
-      decorateProblemDetail(problemDetail, AbstractWebExceptionCodes.METHOD_ARGUMENT_NOT_VALID, parameterizedMessage,
+      decorateProblemDetail(problemDetail, NativeWebExceptionEnumCodes.METHOD_ARGUMENT_NOT_VALID.getErrorCode(),
+          parameterizedMessage,
           params, request);
     }
 
@@ -109,20 +100,25 @@ public abstract class AbstractWebExceptionHandler extends ResponseEntityExceptio
   }
 
   @Override
-  protected final ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
-      HttpStatusCode statusCode,
+  protected final ResponseEntity<Object> handleExceptionInternal(@Nonnull Exception ex, Object body,
+      @Nonnull HttpHeaders headers,
+      @Nonnull HttpStatusCode statusCode,
       @Nonnull WebRequest request) {
 
     logRawException(ex);
 
     ResponseEntity<Object> result = super.handleExceptionInternal(ex, body, headers, statusCode, request);
 
-    if (result.getBody() instanceof ProblemDetail problemDetail) {
+    if (Objects.requireNonNull(result).getBody() instanceof ProblemDetail problemDetail) {
       if (ex instanceof ErrorResponse errorResponse) {
         if (Objects.isNull(problemDetail.getProperties())
             || problemDetail.getProperties().isEmpty()
             || Objects.isNull(problemDetail.getProperties().get(AbstractWebExceptionCodes.CODE))) {
-          decorateProblemDetail(problemDetail, errorResponse.getClass().getSimpleName().toUpperCase(), request);
+
+          // get from mapping
+          NativeWebExceptionEnumCodes exception = NativeWebExceptionEnumCodes.getByClassName(
+              camelToUnderlinedName(errorResponse.getClass().getSimpleName()));
+          decorateProblemDetail(problemDetail, exception.getErrorCode(), request);
         }
       }
     }
@@ -131,9 +127,9 @@ public abstract class AbstractWebExceptionHandler extends ResponseEntityExceptio
   }
 
   @Override
-  protected final ProblemDetail createProblemDetail(Exception ex, HttpStatusCode status, String defaultDetail,
-      String detailMessageCode,
-      Object[] detailMessageArguments, @Nonnull WebRequest request) {
+  protected final @Nonnull ProblemDetail createProblemDetail(@Nonnull Exception ex, @Nonnull HttpStatusCode status,
+      @Nonnull String defaultDetail, String detailMessageCode, Object[] detailMessageArguments,
+      @Nonnull WebRequest request) {
 
     ProblemDetail problemDetail = super.createProblemDetail(ex, status, defaultDetail, detailMessageCode,
         detailMessageArguments, request);
@@ -147,11 +143,12 @@ public abstract class AbstractWebExceptionHandler extends ResponseEntityExceptio
     decorateProblemDetail(ex.getBody(), req);
   }
 
+  @SuppressWarnings({"unchecked"})
   protected void decorateProblemDetail(ProblemDetail problemDetail, WebRequest req) {
 
     String errCode = "";
     if (!Objects.isNull(problemDetail.getProperties()) && !problemDetail.getProperties().isEmpty()) {
-      errCode = String.valueOf(Optional.ofNullable(problemDetail.getProperties()).get()
+      errCode = String.valueOf(Optional.ofNullable(problemDetail.getProperties()).orElse(Collections.EMPTY_MAP)
           .getOrDefault(AbstractWebExceptionCodes.CODE, "BLANK"));
     }
 
@@ -162,6 +159,7 @@ public abstract class AbstractWebExceptionHandler extends ResponseEntityExceptio
     decorateProblemDetail(problemDetail, errCode, null, req);
   }
 
+  @SuppressWarnings({"unchecked"})
   protected void decorateProblemDetail(ProblemDetail problemDetail, String errCode, String detail, WebRequest req) {
 
     decorateProblemDetail(problemDetail, errCode, detail, Collections.EMPTY_LIST, req);
@@ -192,13 +190,14 @@ public abstract class AbstractWebExceptionHandler extends ResponseEntityExceptio
     Object value = ex.getValue();
     String fieldName = (CollectionUtils.isEmpty(ex.getPath()) ? "unknown" : ex.getPath().get(0).getFieldName());
 
-    String messageNotParametrized = AbstractWebExceptionCodes.INVALID_FORMAT_MESSAGE;
+    String messageNotParametrized = NativeWebExceptionEnumCodes.INVALID_FORMAT.getMessage();
 
-    List<String> formattedMessage = Arrays.asList(
+    List<String> formattedMessage = Collections.singletonList(
         String.format("field:%s, value:%s, type:%s", fieldName, value, targetType));
     String parameterizedMessage = MessageFormat.format(messageNotParametrized, fieldName, value, targetType);
 
-    decorateProblemDetail(problemDetail, AbstractWebExceptionCodes.INVALID_FORMAT, parameterizedMessage,
+    decorateProblemDetail(problemDetail, NativeWebExceptionEnumCodes.INVALID_FORMAT.getErrorCode(),
+        parameterizedMessage,
         formattedMessage, request);
   }
 
@@ -214,6 +213,7 @@ public abstract class AbstractWebExceptionHandler extends ResponseEntityExceptio
     return ((ServletWebRequest) req).getRequest();
   }
 
+  @SuppressWarnings({"unused"})
   protected HttpServletResponse getServletResponse(WebRequest req) {
     return ((ServletWebRequest) req).getResponse();
   }
@@ -221,19 +221,41 @@ public abstract class AbstractWebExceptionHandler extends ResponseEntityExceptio
   public abstract String getServiceName();
 
   private void logRawException(Exception ex) {
-    log.error(RAW_EXCEPTION + extractClassNamesFromException(ex), ex);
+    log.error(RAW_EXCEPTION + "{}", extractClassNamesFromException(ex), ex);
   }
 
   private String extractClassNamesFromException(Throwable ex) {
 
-    StringBuilder result = new StringBuilder("");
+    StringBuilder result = new StringBuilder();
 
     if (ex.getCause() != null) {
-      result = result.append(SEPARATOR + ex.getCause().getClass().getSimpleName());
+      result.append(SEPARATOR)
+          .append(ex.getCause().getClass().getSimpleName());
     }
 
-    result = result.append(SEPARATOR + ex.getClass().getSimpleName());
+    result.append(SEPARATOR);
+    result.append(ex.getClass().getSimpleName());
 
     return result.substring(1);
+  }
+
+  public static String camelToUnderlinedName(String name) {
+
+    StringBuilder sb = new StringBuilder();
+    boolean lastWasUnderline = false;
+    for (int i = 0; i < name.length(); i++) {
+      char c = name.charAt(i);
+      boolean isCaps = Character.isUpperCase(c);
+      if (isCaps) {
+        if (i > 0 && !lastWasUnderline) {
+          sb.append('_');
+        }
+        c = Character.toLowerCase(c);
+      }
+      sb.append(c);
+
+      lastWasUnderline = (c == '_');
+    }
+    return sb.toString();
   }
 }

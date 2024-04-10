@@ -21,7 +21,7 @@ public class WebBaseException extends ErrorResponseException {
 
   private static ProblemDetail asProblemDetail(HttpStatusCode status, String code, String message) {
 
-    String title = AbstractWebExceptionCodes.getMessageByCode(code);
+    String title = AbstractWebExceptionCodes.getExceptionByCode(code);
 
     ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, message);
     problemDetail.setTitle(title);
