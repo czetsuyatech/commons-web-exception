@@ -122,3 +122,8 @@ public class WebExceptionHandler extends AbstractWebExceptionHandler {
 @Import({WebExceptionHandlerConfig.class})
 public class Application {}
 ```
+
+6. Example Client
+
+If you want to check how this library is used, you can clone the client repository
+at https://github.com/czetsuya/commons-web-exception-client.
