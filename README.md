@@ -2,6 +2,10 @@
 
 This project is meant to be used to provide common exception handling across multiple microservices.
 
+## Class Diagram
+
+![Class Diagram](docs/img/class-diagram.png).
+
 ## Usage
 
 There are several class that we need to define in order to setup and use this library.

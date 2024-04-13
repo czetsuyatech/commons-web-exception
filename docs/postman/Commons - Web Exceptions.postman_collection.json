@@ -1,0 +1,431 @@
+{
+	"info": {
+		"_postman_id": "bea23e1e-5b68-4dc7-95a5-5081e798bf84",
+		"name": "Commons | Web Exceptions",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2537239"
+	},
+	"item": [
+		{
+			"name": "Missing argument - custom method",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Code check\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.code).to.eql(\"S404\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Detail check\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.detail).to.eql(\"Validation failed for fields (object:userV1, field:emailOrPhoneOnly, message:AssertTrue)\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Errors check\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.errors.length).to.eql(1);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"organization\": \"czetsuyatech\",\r\n    \"firstName\": \"Edward\",\r\n    \"lastName\": \"Legaspi\",\r\n    \"email\": \"czetsuya@gmail.com\",\r\n    \"phone\": \"0912345678\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{commonsWebExceptionClientUrl}}/native-exceptions/method-arguments",
+					"host": [
+						"{{commonsWebExceptionClientUrl}}"
+					],
+					"path": [
+						"native-exceptions",
+						"method-arguments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Missing argument - missing organization",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Code check\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.code).to.eql(\"S404\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Detail check\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.detail).to.eql(\"Validation failed for fields (object:userV1, field:organization, message:NotNull)\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Errors check\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.errors.length).to.eql(1);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{    \r\n    \"firstName\": \"Edward\",\r\n    \"lastName\": \"Legaspi\",\r\n    \"email\": \"czetsuya@gmail.com\"    \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{commonsWebExceptionClientUrl}}/native-exceptions/method-arguments",
+					"host": [
+						"{{commonsWebExceptionClientUrl}}"
+					],
+					"path": [
+						"native-exceptions",
+						"method-arguments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Invalid format - birthdate instant",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Code check\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.code).to.eql(\"S401\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Detail check\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.detail).to.eql(\"Invalid format for (field: birthdate, value: xxx, type: Instant)\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Errors check\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.errors.length).to.eql(1);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{    \r\n    \"organization\": \"czetsuyatech\",\r\n    \"firstName\": \"Edward\",\r\n    \"lastName\": \"Legaspi\",\r\n    \"email\": \"czetsuya@gmail.com\",\r\n    \"birthdate\": \"xxx\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{commonsWebExceptionClientUrl}}/native-exceptions/method-arguments",
+					"host": [
+						"{{commonsWebExceptionClientUrl}}"
+					],
+					"path": [
+						"native-exceptions",
+						"method-arguments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Invalid format - birthdate past",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Code check\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.code).to.eql(\"S404\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Detail check\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.detail).to.eql(\"Validation failed for fields (object:userV1, field:birthdate, message:Past)\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Errors check\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.errors.length).to.eql(1);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{    \r\n    \"organization\": \"czetsuyatech\",\r\n    \"firstName\": \"Edward\",\r\n    \"lastName\": \"Legaspi\",\r\n    \"email\": \"czetsuya@gmail.com\",\r\n    \"birthdate\": \"3024-04-09T07:34:55.290Z\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{commonsWebExceptionClientUrl}}/native-exceptions/method-arguments",
+					"host": [
+						"{{commonsWebExceptionClientUrl}}"
+					],
+					"path": [
+						"native-exceptions",
+						"method-arguments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Resource not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Code check\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.code).to.eql(\"S405\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Detail check\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.detail).to.eql(\"No static resource native-exceptions/resource-not-found.\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"organization\": \"czetsuyatech\",\r\n    \"firstName\": \"Edward\",\r\n    \"lastName\": \"Legaspi\",\r\n    \"email\": \"czetsuya@gmail.com\",\r\n    \"phone\": \"0912345678\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{commonsWebExceptionClientUrl}}/native-exceptions/resource-not-found",
+					"host": [
+						"{{commonsWebExceptionClientUrl}}"
+					],
+					"path": [
+						"native-exceptions",
+						"resource-not-found"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Request method not supported",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 405\", function () {\r",
+							"    pm.response.to.have.status(405);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Code check\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.code).to.eql(\"S402\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Detail check\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.detail).to.eql(\"Method 'PUT' is not supported.\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"organization\": \"czetsuyatech\",\r\n    \"firstName\": \"Edward\",\r\n    \"lastName\": \"Legaspi\",\r\n    \"email\": \"czetsuya@gmail.com\",\r\n    \"phone\": \"0912345678\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{commonsWebExceptionClientUrl}}/native-exceptions/method-arguments",
+					"host": [
+						"{{commonsWebExceptionClientUrl}}"
+					],
+					"path": [
+						"native-exceptions",
+						"method-arguments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Forbidden",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 403\", function () {\r",
+							"    pm.response.to.have.status(403);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Code check\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.code).to.eql(\"S501\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"organization\": \"czetsuyatech\",\r\n    \"firstName\": \"Edward\",\r\n    \"lastName\": \"Legaspi\",\r\n    \"email\": \"czetsuya@gmail.com\",\r\n    \"phone\": \"0912345678\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{commonsWebExceptionClientUrl}}/native-exceptions/forbidden",
+					"host": [
+						"{{commonsWebExceptionClientUrl}}"
+					],
+					"path": [
+						"native-exceptions",
+						"forbidden"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create user - app exception",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Code check\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.code).to.eql(\"A1001\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"organization\": \"czetsuyatech\",\r\n    \"firstName\": \"Edward\",\r\n    \"lastName\": \"Legaspi\",\r\n    \"phone\": \"0912345678\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{commonsWebExceptionClientUrl}}/native-exceptions/users",
+					"host": [
+						"{{commonsWebExceptionClientUrl}}"
+					],
+					"path": [
+						"native-exceptions",
+						"users"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
