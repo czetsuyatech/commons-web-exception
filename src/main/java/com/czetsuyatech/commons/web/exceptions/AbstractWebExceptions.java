@@ -9,8 +9,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.web.ErrorResponseException;
 
 /**
  * Manage the error codes of the application. The following prefixes are used.
@@ -22,7 +20,7 @@ import org.springframework.web.ErrorResponseException;
  * </pre>
  */
 @Slf4j
-public abstract class AbstractWebExceptionCodes extends ErrorResponseException {
+public abstract class AbstractWebExceptions {
 
   public static final String SERVICE = "service";
   public static final String CODE = "code";
@@ -30,10 +28,6 @@ public abstract class AbstractWebExceptionCodes extends ErrorResponseException {
   public static final String ERRORS = "errors";
 
   protected static Map<String, String> exceptionCodes;
-
-  public AbstractWebExceptionCodes(HttpStatusCode status) {
-    super(status);
-  }
 
   static {
     final Map<String, String> map = new LinkedHashMap<>();

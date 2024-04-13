@@ -113,7 +113,7 @@ public abstract class AbstractWebExceptionHandler extends ResponseEntityExceptio
       if (ex instanceof ErrorResponse errorResponse) {
         if (Objects.isNull(problemDetail.getProperties())
             || problemDetail.getProperties().isEmpty()
-            || Objects.isNull(problemDetail.getProperties().get(AbstractWebExceptionCodes.CODE))) {
+            || Objects.isNull(problemDetail.getProperties().get(AbstractWebExceptions.CODE))) {
 
           // get from mapping
           NativeWebExceptionEnumCodes exception = NativeWebExceptionEnumCodes.getByClassName(
@@ -149,7 +149,7 @@ public abstract class AbstractWebExceptionHandler extends ResponseEntityExceptio
     String errCode = "";
     if (!Objects.isNull(problemDetail.getProperties()) && !problemDetail.getProperties().isEmpty()) {
       errCode = String.valueOf(Optional.ofNullable(problemDetail.getProperties()).orElse(Collections.EMPTY_MAP)
-          .getOrDefault(AbstractWebExceptionCodes.CODE, "BLANK"));
+          .getOrDefault(AbstractWebExceptions.CODE, "BLANK"));
     }
 
     decorateProblemDetail(problemDetail, errCode, req);
@@ -170,14 +170,14 @@ public abstract class AbstractWebExceptionHandler extends ResponseEntityExceptio
 
     String baseUrl = getBaseUrl(req);
 
-    problemDetail.setProperty(AbstractWebExceptionCodes.CODE, errCode);
+    problemDetail.setProperty(AbstractWebExceptions.CODE, errCode);
     if (!Objects.isNull(detail)) {
       problemDetail.setDetail(detail);
     }
-    problemDetail.setProperty(AbstractWebExceptionCodes.SERVICE, getServiceName());
+    problemDetail.setProperty(AbstractWebExceptions.SERVICE, getServiceName());
     problemDetail.setType(URI.create(String.format(baseUrl + "/errors/%s", errCode)));
-    problemDetail.setProperty(AbstractWebExceptionCodes.TIMESTAMP, Instant.now());
-    problemDetail.setProperty(AbstractWebExceptionCodes.ERRORS, formattedMessage);
+    problemDetail.setProperty(AbstractWebExceptions.TIMESTAMP, Instant.now());
+    problemDetail.setProperty(AbstractWebExceptions.ERRORS, formattedMessage);
   }
 
   public void handleInvalidFormatException(InvalidFormatException ex, ProblemDetail problemDetail,

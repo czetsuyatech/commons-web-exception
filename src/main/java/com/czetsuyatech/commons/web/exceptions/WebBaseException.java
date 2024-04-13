@@ -11,6 +11,10 @@ import org.springframework.web.ErrorResponseException;
 @ToString
 public class WebBaseException extends ErrorResponseException {
 
+  public WebBaseException(HttpStatusCode status) {
+    super(status);
+  }
+
   public WebBaseException(HttpStatusCode status, String code, String message) {
     this(status, code, message, null);
   }
@@ -21,7 +25,7 @@ public class WebBaseException extends ErrorResponseException {
 
   private static ProblemDetail asProblemDetail(HttpStatusCode status, String code, String message) {
 
-    String title = AbstractWebExceptionCodes.getExceptionByCode(code);
+    String title = AbstractWebExceptions.getExceptionByCode(code);
 
     ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, message);
     problemDetail.setTitle(title);
