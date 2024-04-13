@@ -25,9 +25,9 @@ exceptions.
 public enum AppExceptionCodes {
 
   USER_CREATION_FAILED("A1001", "Use creation failed"),
-  USER_EID_NOT_FOUND("A1002", "User not found"),
-  USER_EMAIL_NOT_FOUND("A1003", "User not found"),
-  USER_PHONE_NOT_FOUND("A1004", "User not found"),
+  USER_EID_NOT_FOUND("A1002", "User EID not found"),
+  USER_EMAIL_NOT_FOUND("A1003", "User email not found"),
+  USER_PHONE_NOT_FOUND("A1004", "User phone not found"),
   ORGANIZATION_NOT_FOUND("A1005", "Organization not found");
 
   private String code;
@@ -63,7 +63,7 @@ public enum AppExceptionCodes {
 
 ```
 @Component
-public class WebExceptions extends AbstractWebExceptionCodes {
+public class WebExceptions extends AbstractWebExceptions {
 
   @Value("${spring.application.name}")
   private String serviceName;
