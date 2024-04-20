@@ -8,7 +8,7 @@ This project is meant to be used to provide common exception handling across mul
 
 ## Usage
 
-There are several class that we need to define in order to setup and use this library.
+There are several classes that we need to define in order to setup and use this library.
 
 But before we do that it's important to know the prefixes that this project is using in defining
 exceptions.
@@ -22,6 +22,7 @@ exceptions.
    Hivemaster, a custom Keycloak project that provides multi-tenant feature.
 
 ```
+@Getter
 public enum AppExceptionCodes {
 
   USER_CREATION_FAILED("A1001", "Use creation failed"),
@@ -36,14 +37,6 @@ public enum AppExceptionCodes {
   AppExceptionCodes(String code, String message) {
     this.code = code;
     this.message = message;
-  }
-
-  public String getCode() {
-    return code;
-  }
-
-  public String getDesc() {
-    return message;
   }
 
   public static Map<String, String> getMapValues() {
