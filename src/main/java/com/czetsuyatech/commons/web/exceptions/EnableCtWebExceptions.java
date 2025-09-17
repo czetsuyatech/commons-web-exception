@@ -10,6 +10,6 @@ import org.springframework.context.annotation.Import;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Import({WebExceptionHandlerConfig.class})
-public @interface EnableNbaWebExceptions {
+public @interface EnableCtWebExceptions {
 
 }
