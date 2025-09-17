@@ -1,6 +1,5 @@
 package com.czetsuyatech.commons.web.exceptions;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -9,6 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatusCode;
 
 /**
  * Manage the error codes of the application. The following prefixes are used.
@@ -32,7 +32,7 @@ public abstract class AbstractWebExceptions {
   static {
     final Map<String, String> map = new LinkedHashMap<>();
 
-    Arrays.stream(NativeWebExceptionEnumCodes.values())
+    Stream.of(NativeWebExceptionEnumCodes.values())
         .forEach(e -> map.put(e.getErrorCode(), e.name()));
 
     exceptionCodes = Collections.unmodifiableMap(map);
@@ -85,4 +85,16 @@ public abstract class AbstractWebExceptions {
   }
 
   public abstract String getServiceName();
+
+  public WebBaseException createException(HttpStatusCode status, String code) {
+    return new WebBaseException(status, code, AbstractWebExceptions.getExceptionByCode(code));
+  }
+
+  public WebBaseException createException(HttpStatusCode status, String code, String message) {
+    return new WebBaseException(status, code, message);
+  }
+
+  public WebBaseException createException(String serviceName, HttpStatusCode status, String code, String message) {
+    return new WebBaseException(serviceName, status, code, message);
+  }
 }

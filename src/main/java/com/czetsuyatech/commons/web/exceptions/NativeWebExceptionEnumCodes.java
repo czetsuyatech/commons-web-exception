@@ -1,6 +1,6 @@
 package com.czetsuyatech.commons.web.exceptions;
 
-import java.util.Arrays;
+import java.util.stream.Stream;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -14,6 +14,8 @@ public enum NativeWebExceptionEnumCodes {
   FORBIDDEN("S403", HttpStatus.FORBIDDEN, ""),
   METHOD_ARGUMENT_NOT_VALID("S404", HttpStatus.NOT_FOUND, "Validation failed for fields {0}"),
   NO_RESOURCE_FOUND_EXCEPTION("S405", HttpStatus.NOT_FOUND, ""),
+  METHOD_NOT_ALLOWED("S406", HttpStatus.METHOD_NOT_ALLOWED, ""),
+  NO_HANDLER("S407", HttpStatus.INTERNAL_SERVER_ERROR, ""),
 
   RUNTIME("S500", HttpStatus.INTERNAL_SERVER_ERROR, ""),
   INTERNAL_SERVER_ERROR("S501", HttpStatus.INTERNAL_SERVER_ERROR, ""),
@@ -34,7 +36,7 @@ public enum NativeWebExceptionEnumCodes {
 
   public static NativeWebExceptionEnumCodes getByClassName(String className) {
 
-    return Arrays.stream(NativeWebExceptionEnumCodes.values())
+    return Stream.of(NativeWebExceptionEnumCodes.values())
         .filter(e -> e.name().equals(className.toUpperCase()))
         .findFirst()
         .orElse(NativeWebExceptionEnumCodes.INTERNAL_SERVER_ERROR);
