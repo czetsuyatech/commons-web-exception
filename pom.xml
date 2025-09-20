@@ -6,18 +6,20 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.0.0-M2</version>
+    <version>4.0.0-M3</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <groupId>com.czetsuyatech.commons</groupId>
   <artifactId>commons-web-exception</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>CzetsuyaTech | Commons Web Exception</name>
-  <description>This project is meant to be used to provide common exception handling across multiple microservices.</description>
+  <description>This project is meant to be used to provide common exception handling across multiple
+    microservices.
+  </description>
 
   <properties>
     <java.version>21</java.version>
-    <spring-cloud.version>2024.0.0</spring-cloud.version>
+    <spring-cloud.version>2025.1.0-M2</spring-cloud.version>
   </properties>
 
   <dependencyManagement>
@@ -38,13 +40,25 @@
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-json</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-jackson</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-openfeign</artifactId>
     </dependency>
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>20240303</version>
+      <version>20250517</version>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
