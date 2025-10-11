@@ -1,6 +1,5 @@
 package com.czetsuyatech.commons.web.exceptions;
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,6 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -25,10 +25,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tools.jackson.databind.exc.InvalidFormatException;
 
 @Slf4j
 public abstract class AbstractWebExceptionHandler extends ResponseEntityExceptionHandler {
@@ -64,6 +66,19 @@ public abstract class AbstractWebExceptionHandler extends ResponseEntityExceptio
 
     ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
     handleConstraintViolationException(ex, problemDetail, request);
+
+    return ResponseEntity.of(problemDetail).build();
+  }
+
+  @ExceptionHandler(ConcurrencyFailureException.class)
+  public ResponseEntity<ProblemDetail> handleConcurrencyFailure(@Nonnull ConcurrencyFailureException ex,
+      @Nonnull NativeWebRequest request) {
+
+    logRawException(ex);
+
+    ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+
+    decorateProblemDetail(problemDetail, NativeWebExceptionEnumCodes.CONCURRENCY_VIOLATION.getErrorCode(), request);
 
     return ResponseEntity.of(problemDetail).build();
   }
@@ -201,7 +216,7 @@ public abstract class AbstractWebExceptionHandler extends ResponseEntityExceptio
     String targetType =
         Objects.isNull(ex.getTargetType()) ? ex.getClass().getSimpleName() : ex.getTargetType().getSimpleName();
     Object value = ex.getValue();
-    String fieldName = (CollectionUtils.isEmpty(ex.getPath()) ? "unknown" : ex.getPath().get(0).getFieldName());
+    String fieldName = (CollectionUtils.isEmpty(ex.getPath()) ? "unknown" : ex.getPath().get(0).getPropertyName());
 
     String messageNotParametrized = NativeWebExceptionEnumCodes.INVALID_FORMAT.getMessage();
 

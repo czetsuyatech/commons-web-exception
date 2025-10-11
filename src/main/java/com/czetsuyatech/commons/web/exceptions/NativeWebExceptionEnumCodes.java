@@ -20,7 +20,8 @@ public enum NativeWebExceptionEnumCodes {
 
   RUNTIME("S500", HttpStatus.INTERNAL_SERVER_ERROR, ""),
   INTERNAL_SERVER_ERROR("S501", HttpStatus.INTERNAL_SERVER_ERROR, ""),
-  BAD_GATEWAY("S502", HttpStatus.BAD_GATEWAY, "")
+  BAD_GATEWAY("S502", HttpStatus.BAD_GATEWAY, ""),
+  CONCURRENCY_VIOLATION("S503", HttpStatus.CONFLICT, "")
   //
   ;
 
