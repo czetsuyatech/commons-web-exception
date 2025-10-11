@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.ConstraintViolationException;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.time.Instant;
@@ -51,6 +52,18 @@ public abstract class AbstractWebExceptionHandler extends ResponseEntityExceptio
 
     ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
     handleInvalidFormatException(ex, problemDetail, request);
+
+    return ResponseEntity.of(problemDetail).build();
+  }
+
+  @ExceptionHandler({ConstraintViolationException.class})
+  public final ResponseEntity<ProblemDetail> handleConstraintViolationException(ConstraintViolationException ex,
+      @Nonnull WebRequest request) {
+
+    logRawException(ex);
+
+    ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+    handleConstraintViolationException(ex, problemDetail, request);
 
     return ResponseEntity.of(problemDetail).build();
   }
@@ -149,7 +162,7 @@ public abstract class AbstractWebExceptionHandler extends ResponseEntityExceptio
     String errCode = "";
     if (!Objects.isNull(problemDetail.getProperties()) && !problemDetail.getProperties().isEmpty()) {
       errCode = String.valueOf(Optional.ofNullable(problemDetail.getProperties()).orElse(Collections.EMPTY_MAP)
-          .getOrDefault(AbstractWebExceptions.CODE, "BLANK"));
+          .getOrDefault(AbstractWebExceptions.CODE, "UNKNOWN"));
     }
 
     decorateProblemDetail(problemDetail, errCode, req);
@@ -199,6 +212,15 @@ public abstract class AbstractWebExceptionHandler extends ResponseEntityExceptio
     decorateProblemDetail(problemDetail, NativeWebExceptionEnumCodes.INVALID_FORMAT.getErrorCode(),
         parameterizedMessage,
         formattedMessage, request);
+  }
+
+  private void handleConstraintViolationException(ConstraintViolationException ex, ProblemDetail problemDetail,
+      WebRequest request) {
+
+    logRawException(ex);
+
+    decorateProblemDetail(problemDetail, NativeWebExceptionEnumCodes.CONSTRAINT_VIOLATION.getErrorCode(),
+        ex.getMessage(), request);
   }
 
   private String getBaseUrl(WebRequest req) {
